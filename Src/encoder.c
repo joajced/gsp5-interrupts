@@ -1,41 +1,58 @@
 #include "encoder.h"
-#include "led_io.h"
 #include "timestamp.h"
 #include "stm32f4xx_hal.h"
 
-int count = 0; // Zählvariable für Encoder-Position
-
-#define WINKEL_PRO_SCHRITT 0.3 // 360° / 1200
+#define WINKEL_PRO_SCHRITT 0.3 // = 360° / 1200
 
 Direction transitions[4][4] =
-{ /*           A    |    D    |    B    |    C    */
-	/* A */ {NO_CHANGE, BACKWARDS, FORWARDS, INVALID},
-	/* D */ {FORWARDS, NO_CHANGE, INVALID, BACKWARDS},
-	/* B */ {BACKWARDS, INVALID, NO_CHANGE, FORWARDS},
-	/* C */ {INVALID, FORWARDS, BACKWARDS, NO_CHANGE}
+{        /*   A   |   D   |   B   |   C   */
+	/* A */ {UNCHANGED, BACKWARD, FORWARD, INVALID},
+	/* D */ {FORWARD, UNCHANGED, INVALID, BACKWARD},
+	/* B */ {BACKWARD, INVALID, UNCHANGED, FORWARD},
+	/* C */ {INVALID, FORWARD, BACKWARD, UNCHANGED}
 };
 
-int setPhase(int newPhase, int currPhase, Direction *dir)
-{
-	Direction currDir = transitions[currPhase][newPhase];
+// Zustandsvariablen
+volatile Phase currPhase = PHASE_A;
+volatile Direction currDirection = UNCHANGED;
+volatile int count = 0;
+volatile uint32_t lastTimestamp;
+volatile bool fehlerzustand = false;
+
+void EXTI0_IRQHandler(void)
+{	
+	uint8_t PG0    = GPIOG->IDR & 0x01;
+	Phase newPhase = (currPhase & 0x02) | PG0;
 	
-	switch(currDir)
+	currDirection = transitions[currPhase][newPhase];
+	switch(currDirection)
 	{
-		case FORWARDS:
-			count++;
-			break;
-		case BACKWARDS:
-			count--;
-			break;
-		case INVALID:
-			count = 0;
-			*dir = currDir;
-			return -1;
-		case NO_CHANGE:
-			break;
+		case FORWARD:   count++; break;
+		case BACKWARD:  count--; break;
+		case INVALID:   resetState(); fehlerzustand = true; break;
+		case UNCHANGED: break;
 	}
-	*dir = currDir;
-	return 0;
+	
+	currPhase = newPhase;
+	EXTI->PR = (1 << 0); // Reset INT0
+}
+
+void EXTI1_IRQHandler(void)
+{
+	uint8_t PG1    = (GPIOG->IDR >> 1) & 0x01;
+	Phase newPhase = PG1 | (currPhase & 0x01);
+	
+	currDirection = transitions[currPhase][newPhase];
+	switch(currDirection)
+	{
+		case FORWARD:   count++; break;
+		case BACKWARD:  count--; break;
+		case INVALID:   resetState(); break;
+		case UNCHANGED: break;
+	}
+	
+	currPhase = newPhase;
+	EXTI->PR = (1 << 1); // Reset INT1
 }
 
 int getCount()
@@ -43,14 +60,26 @@ int getCount()
 	return count;
 }
 
-void resetCount()
+void resetState()
 {
+	currPhase = PHASE_A;
+	currDirection = UNCHANGED;
 	count = 0;
+}
+
+bool isFehlerzustand()
+{
+	return fehlerzustand;
+}
+
+void resetFehlerzustand()
+{
+	fehlerzustand = false;
 }
 
 double calcWinkel()
 {
-	return getCount() * WINKEL_PRO_SCHRITT;
+	return count * WINKEL_PRO_SCHRITT;
 }
 
 double calcGeschw(int count1, int count2, double periode)

@@ -1,10 +1,10 @@
-#ifndef LED_IO_H
-#define LED_IO_H
+#ifndef GPIO_H
+#define GPIO_H
 
 #include <stdbool.h>
 #include "encoder.h"
 
-int readLedF();
+void initInterrupts();
 
 bool readButtonF(int);
 
