@@ -10,7 +10,7 @@ int readEncoderInput()
 
 void setLedD()
 {
-	GPIOD->ODR = count & 0xFF;
+	GPIOD->ODR = currCount & 0xFF;
 }
 
 void setLedE()

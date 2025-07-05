@@ -17,36 +17,23 @@ int main()
 	lcdSetFont(20);
 	printLabels();
 	
-	currPhase = readEncoderInput();
-	newPhase  = readEncoderInput();
-	
-	int count1 = count;
+	initTimer();
+	uint32_t lastTimestamp = getTimestamp();
+	int lastCount = 0;
 	double winkel1, geschw1;
 	
 	int printCount = 0;
-	
-	initTimer();
-	uint32_t t1 = getTimestamp();
+	currPhase = GPIOG->IDR & 0x03;
+	initInterrupts();
 	
 	while (1)
 	{
-		/* Oszilloskop D16
-		 * int a = getTimestamp();
-		 * GPIOE->BSRR = 1;
-		 */
+		currTimestamp = getTimestamp();
 		
 		/************************************************
-		 * 1. EINGABE                                   *
+		 * 1. ERROR-ABFRAGE                             *
 		 ************************************************/
 		
-		newPhase = readEncoderInput();
-		uint32_t t2 = getTimestamp();
-		
-		/************************************************
-		 * 2. ERROR-ABFRAGE                             *
-		 ************************************************/
-		
-		updateDirection();
 		if (currDir == INVALID)
 		{
 			printError();
@@ -55,34 +42,33 @@ int main()
 			// Wartet bis S6 gedrückt wird -> Reset Error
 			while (!isS6Pressed());
 			clearError();
-			count = 0;
-			currPhase = newPhase = readEncoderInput();
+			currCount = 0;
+			currPhase = GPIOG->IDR & 0x03;
 		}
 		
 		/************************************************
-		 * 3. VERARBEITUNG                              *
+		 * 2. VERARBEITUNG                              *
 		 ************************************************/
 		
-		int count2 = count;
-		double period = getPeriodMs(t1, t2);
+		double period = getPeriodMs(lastTimestamp, currTimestamp);
 		
 		// Nur berechnen und drucken wenn genug ZEITFENSTER vergangen ist
-		if (period > (ZEITFENSTER + 50.0) || (period > ZEITFENSTER && newPhase != currPhase))
+		if (period > (ZEITFENSTER + 50.0) || (period > ZEITFENSTER && currDir != UNCHANGED))
 		{
 			printCount = 0;
 			
 			winkel1 = calcWinkel();
-			geschw1 = calcGeschw(count1, count2, period);
+			geschw1 = calcGeschw(lastCount, currCount, period);
 			
-			t1 = t2;	
-			count1 = count2;
+			lastTimestamp = currTimestamp;
+			lastCount = currCount;
 		}
 		
 		/************************************************
-		 * 4. LED- UND BILDSCHIRMAUSGABE                *
+		 * 3. LED- UND BILDSCHIRMAUSGABE                *
 		 ************************************************/
 		
-		if (newPhase != currPhase)
+		if (currDir != UNCHANGED)
 		{
 			setLedD();
 			setLedE();
@@ -93,13 +79,5 @@ int main()
 			printCount < 10 ? printWinkel(winkel1, printCount) : printGeschw(geschw1, printCount - 10);
 			printCount++;
 		}
-		
-		currPhase = newPhase;
-		
-		/* Oszilloskop D16
-		 * GPIOE->BSRR = (1 << 16);
-		 * int b = getTimestamp();
-		 * printf("%f \n", getPeriodMs(a,b));
-		 */
 	}
 }

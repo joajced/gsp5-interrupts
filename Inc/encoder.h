@@ -1,6 +1,8 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
+#include <stm32f4xx_hal.h>
+
 typedef enum
 {
 	PHASE_A = 0x00,
@@ -18,9 +20,12 @@ typedef enum
 } Direction;
 
 // Deklaration globaler Variablen
-extern int count;
-extern Phase currPhase, newPhase;
-extern Direction currDir;
+volatile extern Phase currPhase, newPhase;
+volatile extern int       currCount;
+volatile extern Direction currDir;
+volatile extern uint32_t  currTimestamp;
+
+void initInterrupts();
 
 void updateDirection();
 
