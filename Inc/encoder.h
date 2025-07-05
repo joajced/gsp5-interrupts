@@ -1,6 +1,8 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
+extern int count;
+
 typedef enum
 {
 	PHASE_A = 0x00,
@@ -18,10 +20,6 @@ typedef enum
 } Direction;
 
 void updateDirection(Phase newPhase, Phase currPhase, Direction* currDir);
-
-int getCount();
-
-void resetCount();
 
 double calcWinkel();
 

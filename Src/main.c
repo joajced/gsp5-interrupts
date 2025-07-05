@@ -21,7 +21,7 @@ int main()
 	Phase newPhase  = readEncoderInput();
 	Direction currDir = UNCHANGED;
 	
-	int count1 = getCount();
+	int count1 = count;
 	double winkel1, geschw1;
 	
 	int printCount = 0;
@@ -56,7 +56,7 @@ int main()
 			// Wartet bis S6 gedrückt wird -> Reset Error
 			while (!isS6Pressed());
 			clearError();
-			resetCount();
+			count = 0;
 			currPhase = newPhase = readEncoderInput();
 		}
 		
@@ -64,7 +64,7 @@ int main()
 		 * 3. VERARBEITUNG                              *
 		 ************************************************/
 		
-		int count2 = getCount();
+		int count2 = count;
 		double period = getPeriodMs(t1, t2);
 		
 		// Nur berechnen und drucken wenn genug ZEITFENSTER vergangen ist

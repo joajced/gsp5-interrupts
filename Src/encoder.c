@@ -31,16 +31,6 @@ void updateDirection(Phase newPhase, Phase currPhase, Direction* currDir)
 	*currDir = newDir;
 }
 
-int getCount()
-{
-	return count;
-}
-
-void resetCount()
-{
-	count = 0;
-}
-
 double calcWinkel()
 {
 	return count * WINKEL_PRO_SCHRITT;
