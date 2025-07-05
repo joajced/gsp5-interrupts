@@ -6,8 +6,8 @@
 #define WINKEL_PRO_SCHRITT 0.3 // =360/1200
 
 // Initialisierung globaler Variablen
-volatile Phase currPhase = PHASE_A;
-volatile Phase newPhase  = PHASE_A;
+volatile Phase     currPhase = PHASE_A;
+volatile Phase     newPhase  = PHASE_A;
 volatile int       currCount = 0;
 volatile Direction currDir   = UNCHANGED;
 volatile uint32_t  currTimestamp = 0;
@@ -49,7 +49,7 @@ void initInterrupts()
 void EXTI0_IRQHandler(void)
 {
 	currTimestamp = getTimestamp();
-	newPhase = GPIOG->IDR & 0x03;
+	newPhase = readEncoderInput();
 	currDir = transitions[currPhase][newPhase];
 	switch(currDir)
 	{
@@ -65,7 +65,7 @@ void EXTI0_IRQHandler(void)
 void EXTI1_IRQHandler(void)
 {
 	currTimestamp = getTimestamp();
-	newPhase = GPIOG->IDR & 0x03;
+	newPhase = readEncoderInput();
 	currDir = transitions[currPhase][newPhase];
 	switch(currDir)
 	{

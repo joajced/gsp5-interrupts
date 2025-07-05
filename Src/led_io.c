@@ -5,7 +5,7 @@
 
 int readEncoderInput()
 {
-	return GPIOF->IDR & 0x03;
+	return GPIOG->IDR & 0x03;
 }
 
 void setLedD()

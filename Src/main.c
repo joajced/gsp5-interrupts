@@ -23,7 +23,7 @@ int main()
 	double winkel1, geschw1;
 	
 	int printCount = 0;
-	currPhase = GPIOG->IDR & 0x03;
+	currPhase = readEncoderInput();
 	initInterrupts();
 	
 	while (1)
@@ -43,7 +43,7 @@ int main()
 			while (!isS6Pressed());
 			clearError();
 			currCount = 0;
-			currPhase = GPIOG->IDR & 0x03;
+			currPhase = readEncoderInput();
 		}
 		
 		/************************************************
