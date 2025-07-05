@@ -52,7 +52,6 @@ int main()
 		
 		double period = getPeriodMs(lastTimestamp, currTimestamp);
 		
-		// Nur berechnen und drucken wenn genug ZEITFENSTER vergangen ist
 		if (period > (ZEITFENSTER + 50.0) || (period > ZEITFENSTER && currDir != UNCHANGED))
 		{
 			printCount = 0;
