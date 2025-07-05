@@ -18,17 +18,17 @@ int main()
 	printLabels();
 	
 	initTimer();
-	uint32_t lastTimestamp = getTimestamp();
+	uint32_t lastTimestamp = GET_TIMESTAMP();
 	int lastCount = 0;
 	double winkel1, geschw1;
 	
 	int printCount = 0;
-	currPhase = readEncoderInput();
+	currPhase = READ_ENCODER_INPUT();
 	initInterrupts();
 	
 	while (1)
 	{
-		currTimestamp = getTimestamp();
+		currTimestamp = GET_TIMESTAMP();
 		
 		/************************************************
 		 * 1. ERROR-ABFRAGE                             *
@@ -37,13 +37,10 @@ int main()
 		if (currDir == INVALID)
 		{
 			printError();
-			setLedE();
-			
-			// Wartet bis S6 gedrückt wird -> Reset Error
 			while (!isS6Pressed());
 			clearError();
 			currCount = 0;
-			currPhase = readEncoderInput();
+			currPhase = READ_ENCODER_INPUT();
 		}
 		
 		/************************************************
@@ -67,12 +64,7 @@ int main()
 		 * 3. LED- UND BILDSCHIRMAUSGABE                *
 		 ************************************************/
 		
-		if (currDir != UNCHANGED)
-		{
-			setLedD();
-			setLedE();
-		}
-		
+		SET_LED_D();
 		if (printCount < 20)
 		{
 			printCount < 10 ? printWinkel(winkel1, printCount) : printGeschw(geschw1, printCount - 10);

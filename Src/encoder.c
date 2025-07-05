@@ -48,8 +48,8 @@ void initInterrupts()
 
 void EXTI0_IRQHandler(void)
 {
-	currTimestamp = getTimestamp();
-	newPhase = readEncoderInput();
+	currTimestamp = GET_TIMESTAMP();
+	newPhase = READ_ENCODER_INPUT();
 	currDir = transitions[currPhase][newPhase];
 	switch(currDir)
 	{
@@ -64,8 +64,8 @@ void EXTI0_IRQHandler(void)
 
 void EXTI1_IRQHandler(void)
 {
-	currTimestamp = getTimestamp();
-	newPhase = readEncoderInput();
+	currTimestamp = GET_TIMESTAMP();
+	newPhase = READ_ENCODER_INPUT();
 	currDir = transitions[currPhase][newPhase];
 	switch(currDir)
 	{

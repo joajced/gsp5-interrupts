@@ -27,8 +27,6 @@ volatile extern uint32_t  currTimestamp;
 
 void initInterrupts();
 
-void updateDirection();
-
 double calcWinkel();
 
 double calcGeschw(int count1, int count2, double periode);
