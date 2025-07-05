@@ -1,7 +1,7 @@
 #ifndef TIMESTAMP_H
 #define TIMESTAMP_H
 
-#include "stm32f4xx_hal.h"
+#include <stm32f4xx_hal.h>
 #include "timer.h"
 
 uint32_t getTimestamp();

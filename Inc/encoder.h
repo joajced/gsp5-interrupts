@@ -1,14 +1,12 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
-#include <stdbool.h>
-
 typedef enum
 {
-	PHASE_A = 0x00u,
-	PHASE_B = 0x10u,
-	PHASE_C = 0x11u,
-	PHASE_D = 0x01u
+	PHASE_A = 0x00,
+	PHASE_B = 0x10,
+	PHASE_C = 0x11,
+	PHASE_D = 0x01
 } Phase;
 
 typedef enum
@@ -19,13 +17,11 @@ typedef enum
 	UNCHANGED
 } Direction;
 
+void updateDirection(Phase newPhase, Phase currPhase, Direction* currDir);
+
 int getCount();
 
-void resetState();
-
-bool isFehlerzustand();
-
-void resetFehlerzustand();
+void resetCount();
 
 double calcWinkel();
 

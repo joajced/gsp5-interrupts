@@ -3,12 +3,12 @@
  
 void printLabels();
 
+void printWinkel(double neuWinkel, int printCount);
+
+void printGeschw(double neuGeschw, int printCount);
+
 void printError();
 
 void clearError();
-
-void printWinkel(double, int);
-
-void printGeschw(double, int printCount);
 
 #endif

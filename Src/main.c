@@ -1,50 +1,106 @@
 #include <stdio.h>
 #include "stm32f4xx_hal.h"
-#include "init.h"
 #include "LCD_GUI.h"
+#include "init.h"
 #include "lcd.h"
-
 #include "encoder.h"
-#include "gpio.h"
-#include "display_output.h"
 #include "timestamp.h"
+#include "led_io.h"
+#include "display_output.h"
 
-#define ZEITFENSTER 250.0 /*ms*/
+#define ZEITFENSTER 250.0
 
 int main()
 {
 	initITSboard();
 	GUI_init(DEFAULT_BRIGHTNESS);
 	lcdSetFont(20);
-	
-	initInterrupts();
 	printLabels();
-	initTimer();
 	
-	uint32_t t1 = getTimeStamp();
+	Phase currPhase = readEncoderInput();
+	Phase newPhase  = readEncoderInput();
+	Direction currDir = UNCHANGED;
+	
+	int count1 = getCount();
+	double winkel1, geschw1;
+	
+	int printCount = 0;
+	
+	initTimer();
+	uint32_t t1 = getTimestamp();
 	
 	while (1)
 	{
-		double period = getPeriodMs(t1, getTimeStamp());
+		/* Oszilloskop D16
+		 * int a = getTimestamp();
+		 * GPIOE->BSRR = 1;
+		 */
 		
-		if (isFehlerzustand())
+		/************************************************
+		 * 1. EINGABE                                   *
+		 ************************************************/
+		
+		newPhase = readEncoderInput();
+		uint32_t t2 = getTimestamp();
+		
+		/************************************************
+		 * 2. ERROR-ABFRAGE                             *
+		 ************************************************/
+		
+		updateDirection(newPhase, currPhase, &currDir);
+		if (currDir == INVALID)
 		{
 			printError();
+			setLedE(INVALID);
 			
-			while (!readButtonF(6));
+			// Wartet bis S6 gedrückt wird -> Reset Error
+			while (!isS6Pressed());
 			clearError();
-			resetState();
+			resetCount();
+			currPhase = newPhase = readEncoderInput();
 		}
 		
-		if (period > ZEITFENSTER)
+		/************************************************
+		 * 3. VERARBEITUNG                              *
+		 ************************************************/
+		
+		int count2 = getCount();
+		double period = getPeriodMs(t1, t2);
+		
+		// Nur berechnen und drucken wenn genug ZEITFENSTER vergangen ist
+		if (period > (ZEITFENSTER + 50.0) || (period > ZEITFENSTER && newPhase != currPhase))
 		{
-			char temp[16];
-			double winkel = calcWinkel();
-			sprintf(temp, "%10.1f", winkel);
-			lcdGotoXY(1, 2);
-			lcdPrintReplS(temp);
+			printCount = 0;
 			
-			t1 = getTimeStamp();
+			winkel1 = calcWinkel();
+			geschw1 = calcGeschw(count1, count2, period);
+			
+			t1 = t2;	
+			count1 = count2;
 		}
+		
+		/************************************************
+		 * 4. AUSGABE                                   *
+		 ************************************************/
+		
+		if (newPhase != currPhase)
+		{
+			setLedD(count2);
+			setLedE(currDir);
+		}
+		
+		if (printCount < 20)
+		{
+			printCount < 10 ? printWinkel(winkel1, printCount) : printGeschw(geschw1, printCount - 10);
+			printCount++;
+		}
+		
+		currPhase = newPhase;
+		
+		/* Oszilloskop D16
+		 * GPIOE->BSRR = (1 << 16);
+		 * int b = getTimestamp();
+		 * printf("%f \n", getPeriodMs(a,b));
+		 */
 	}
 }

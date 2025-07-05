@@ -1,11 +1,15 @@
-#ifndef GPIO_H
-#define GPIO_H
+#ifndef LED_IO_H
+#define LED_IO_H
 
 #include <stdbool.h>
 #include "encoder.h"
 
-void initInterrupts();
+int readEncoderInput();
 
-bool readButtonF(int);
+void setLedD(int count);
+
+void setLedE(Direction dir);
+
+bool isS6Pressed();
 
 #endif
