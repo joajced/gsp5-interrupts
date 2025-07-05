@@ -3,7 +3,11 @@
 
 #define WINKEL_PRO_SCHRITT 0.3 // =360/1200
 
+// Initialisierung globaler Variablen
 int count = 0;
+Phase     currPhase = PHASE_A;
+Phase     newPhase  = PHASE_A;
+Direction currDir   = UNCHANGED;
 
 Direction transitions[4][4] =
 {        /*   A   |   D   |   B   |   C   */
@@ -13,7 +17,7 @@ Direction transitions[4][4] =
 	/* C */ {INVALID, FORWARD, BACKWARD, UNCHANGED}
 };
 
-void updateDirection(Phase newPhase, Phase currPhase, Direction* currDir)
+void updateDirection()
 {
 	Direction newDir = transitions[currPhase][newPhase];
 	switch (newDir)
@@ -27,8 +31,7 @@ void updateDirection(Phase newPhase, Phase currPhase, Direction* currDir)
 		case INVALID:   break;
 		case UNCHANGED: break;
 	}
-	
-	*currDir = newDir;
+	currDir = newDir;
 }
 
 double calcWinkel()
@@ -39,5 +42,5 @@ double calcWinkel()
 double calcGeschw(int count1, int count2, double periode)
 {
 	double steps = (double) count2 - count1;
-	return (steps / (periode/ 1000)) * WINKEL_PRO_SCHRITT;
+	return (steps / (periode / 1000)) * WINKEL_PRO_SCHRITT;
 }

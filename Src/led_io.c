@@ -8,14 +8,14 @@ int readEncoderInput()
 	return GPIOF->IDR & 0x03;
 }
 
-void setLedD(int count)
+void setLedD()
 {
 	GPIOD->ODR = count & 0xFF;
 }
 
-void setLedE(Direction dir)
+void setLedE()
 {
-	switch(dir)
+	switch(currDir)
 	{
 		case FORWARD:
 			GPIOE->ODR = (1 << 7);

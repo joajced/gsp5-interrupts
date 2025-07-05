@@ -1,8 +1,6 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
-extern int count;
-
 typedef enum
 {
 	PHASE_A = 0x00,
@@ -19,7 +17,12 @@ typedef enum
 	UNCHANGED
 } Direction;
 
-void updateDirection(Phase newPhase, Phase currPhase, Direction* currDir);
+// Deklaration globaler Variablen
+extern int count;
+extern Phase currPhase, newPhase;
+extern Direction currDir;
+
+void updateDirection();
 
 double calcWinkel();
 

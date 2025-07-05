@@ -6,9 +6,9 @@
 
 int readEncoderInput();
 
-void setLedD(int count);
+void setLedD();
 
-void setLedE(Direction dir);
+void setLedE();
 
 bool isS6Pressed();
 

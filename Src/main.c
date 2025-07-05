@@ -17,9 +17,8 @@ int main()
 	lcdSetFont(20);
 	printLabels();
 	
-	Phase currPhase = readEncoderInput();
-	Phase newPhase  = readEncoderInput();
-	Direction currDir = UNCHANGED;
+	currPhase = readEncoderInput();
+	newPhase  = readEncoderInput();
 	
 	int count1 = count;
 	double winkel1, geschw1;
@@ -47,11 +46,11 @@ int main()
 		 * 2. ERROR-ABFRAGE                             *
 		 ************************************************/
 		
-		updateDirection(newPhase, currPhase, &currDir);
+		updateDirection();
 		if (currDir == INVALID)
 		{
 			printError();
-			setLedE(INVALID);
+			setLedE();
 			
 			// Wartet bis S6 gedrückt wird -> Reset Error
 			while (!isS6Pressed());
@@ -80,13 +79,13 @@ int main()
 		}
 		
 		/************************************************
-		 * 4. AUSGABE                                   *
+		 * 4. LED- UND BILDSCHIRMAUSGABE                *
 		 ************************************************/
 		
 		if (newPhase != currPhase)
 		{
-			setLedD(count2);
-			setLedE(currDir);
+			setLedD();
+			setLedE();
 		}
 		
 		if (printCount < 20)
