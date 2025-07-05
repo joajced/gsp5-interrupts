@@ -20,7 +20,7 @@ typedef enum
 } Direction;
 
 // Deklaration globaler Variablen
-volatile extern Phase currPhase, newPhase;
+volatile extern Phase     currPhase, newPhase;
 volatile extern int       currCount;
 volatile extern Direction currDir;
 volatile extern uint32_t  currTimestamp;
