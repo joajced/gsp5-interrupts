@@ -17,15 +17,9 @@ void setLedE()
 {
 	switch(currDir)
 	{
-		case FORWARD:
-			GPIOE->ODR = (1 << 7);
-			break;
-		case BACKWARD:
-			GPIOE->ODR = (1 << 6);
-			break;
-		case INVALID:
-			GPIOE->ODR = (1 << 5);
-			break;
+		case FORWARD:   GPIOE->ODR = (1 << 7); break;
+		case BACKWARD:  GPIOE->ODR = (1 << 6); break;
+		case INVALID:   GPIOE->ODR = (1 << 5); break;
 		case UNCHANGED: break;
 	}
 }
