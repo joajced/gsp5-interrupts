@@ -53,8 +53,15 @@ int main()
 		{
 			printCount = 0;
 			
-			winkel1 = calcWinkel();
-			geschw1 = calcGeschw(lastCount, currCount, period);
+			// Neueste Daten für die Berechnung abfragen
+			// Deren Werte werden auf dem Display ausgegeben, jedoch nirgendwohin gespeichert
+			uint32_t currTimestampPRINT = GET_TIMESTAMP();
+			int currCountPRINT = currCount;
+			
+			double periodPRINT = getPeriodMs(lastTimestamp, currTimestampPRINT);
+			
+			winkel1 = currCountPRINT * 0.3;
+			geschw1 = calcGeschw(lastCount, currCountPRINT, periodPRINT);
 			
 			lastTimestamp = currTimestamp;
 			lastCount = currCount;
